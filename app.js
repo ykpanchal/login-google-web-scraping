@@ -8,23 +8,23 @@ var express = require('express'),
     port = process.env.PORT || 8002;
 
 route.get('/scraper', function (req, res) {
-    request("http://www.echojs.com/", function (err, resp, body) {
+    request("https://www.amazon.com/s?srs=5286335011", function (err, resp, body) {
         if (!err && resp.statusCode === 200) {
             var $ = cheerio.load(body),
-                pageURLs = [];
+                productsData = [];
 
-            $('article h2 a').map(function (i, links) {
-                var articleText = $(links).text(),
-                    articleLink = $(links).attr('href');
+            $('.a-size-base-plus a-color-base a-text-normal').map(function (i, data) {
+                var productName = $(data).text(),
+                    productLink = $(data).attr('href');
 
-                pageURLs.push({
-                    link: articleLink,
-                    desc: articleText
+                productsData.push({
+                    prodlink: productLink,
+                    prodName: productName
                 });
             });
 
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(pageURLs));
+            res.send(JSON.stringify(productsData));
         }
     });
 });
